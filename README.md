@@ -63,10 +63,9 @@ Simply **double-click** on:
 
 ## 🔐 Secure Gateway Login
 
-Access the secure portal at `http://localhost:3000/login` with your manager credentials:
+Access the secure portal at `http://localhost:3000/login` using your configured manager/supervisor credentials.
 
-* **Email:** `admin@shrikrishna.com`
-* **Password:** `Admin123!`
+*(Refer to your database seeder or local environment configuration for secure credentials.)*
 
 ---
 
