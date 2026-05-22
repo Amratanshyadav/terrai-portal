@@ -50,6 +50,10 @@ export default function LoginPage() {
         return data.message;
       }
     }
+    // Handle Network Errors (e.g. backend server is unreachable due to Wi-Fi mismatch or firewall blocks)
+    if (err.request && !err.response) {
+      return 'Connection failed. Please verify that your phone is connected to the EXACT same Wi-Fi network as the computer, and that Windows Defender Firewall is not blocking port 5000.';
+    }
     return fallback;
   };
 
