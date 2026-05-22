@@ -268,19 +268,6 @@ export default function LoginPage() {
             </div>
 
             <div>
-              <label className="text-xs font-bold text-zinc-400 uppercase tracking-wider block mb-1.5">Operational Role</label>
-              <select
-                value={role}
-                onChange={(e) => setRole(e.target.value)}
-                className="w-full bg-zinc-900/60 border border-zinc-800 rounded-xl py-3 px-4 text-sm text-white focus:outline-none focus:border-emerald-500 transition-colors focus:ring-1 focus:ring-emerald-500"
-              >
-                <option value="Supervisor">Supervisor (Default)</option>
-                <option value="Manager">Manager</option>
-                <option value="Admin">Administrator</option>
-              </select>
-            </div>
-
-            <div>
               <label className="text-xs font-bold text-zinc-400 uppercase tracking-wider block mb-1.5">Password</label>
               <div className="relative">
                 <Lock className="absolute left-3.5 top-1/2 transform -translate-y-1/2 w-4 h-4 text-zinc-500" />

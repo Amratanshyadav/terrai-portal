@@ -15,6 +15,7 @@ interface IAuthState {
   setSession: (user: IUserProfile, access: string, refresh: string) => void;
   clearSession: () => void;
   loadSession: () => void;
+  updateUser: (user: IUserProfile) => void;
 }
 
 export const useAuthStore = create<IAuthState>((set) => ({
@@ -56,5 +57,12 @@ export const useAuthStore = create<IAuthState>((set) => ({
         });
       }
     }
+  },
+
+  updateUser: (user) => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('user', JSON.stringify(user));
+    }
+    set({ user });
   },
 }));

@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useAuthStore } from '../../store/useAuthStore';
 import { useNotificationStore } from '../../store/useNotificationStore';
+import { api } from '../../services/api';
 import { 
   Activity, 
   LayoutDashboard, 
@@ -15,7 +16,8 @@ import {
   LogOut,
   Bell,
   Menu,
-  X
+  X,
+  Loader2
 } from 'lucide-react';
 import io from 'socket.io-client';
 
@@ -39,11 +41,47 @@ export default function DashboardLayout({
   const router = useRouter();
   const pathname = usePathname();
   
-  const { user, isAuthenticated, loadSession, clearSession } = useAuthStore();
+  const { user, isAuthenticated, loadSession, clearSession, updateUser } = useAuthStore();
   const { notifications, addNotification } = useNotificationStore();
   
   const [mobileOpen, setMobileOpen] = useState(false);
   const [showNotiDropdown, setShowNotiDropdown] = useState(false);
+
+  // States for dynamic Post-Login Role Configuration
+  const [showProfileModal, setShowProfileModal] = useState(false);
+  const [selectedRole, setSelectedRole] = useState<'Admin' | 'Manager' | 'Supervisor' | 'Worker'>('Supervisor');
+  const [updatingRole, setUpdatingRole] = useState(false);
+  const [profileError, setProfileError] = useState<string | null>(null);
+  const [profileSuccess, setProfileSuccess] = useState(false);
+
+  // Submit Handler: Update Operational Role
+  const handleUpdateRole = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setUpdatingRole(true);
+    setProfileError(null);
+    setProfileSuccess(false);
+
+    try {
+      const { data } = await api.put('/auth/role', { role: selectedRole });
+      const updatedUser = data.data.user;
+
+      // Sync user session details
+      updateUser(updatedUser);
+      setProfileSuccess(true);
+      
+      // Auto close modal after brief delay
+      setTimeout(() => {
+        setShowProfileModal(false);
+      }, 1500);
+    } catch (err: any) {
+      setProfileError(
+        err.response?.data?.message || 
+        'Failed to apply operational role credentials. Please check your connection.'
+      );
+    } finally {
+      setUpdatingRole(false);
+    }
+  };
 
   // 1. Session verification & redirect guard
   useEffect(() => {
@@ -140,12 +178,21 @@ export default function DashboardLayout({
         {/* Profile Card & Logout */}
         <div className="border-t border-zinc-900 pt-4 space-y-4">
           <div className="flex items-center justify-between px-2">
-            <div>
-              <span className="font-bold text-sm block text-white">{user.firstName}</span>
-              <span className="text-[10px] bg-emerald-950 text-emerald-400 px-2 py-0.5 rounded font-semibold mt-1 inline-block uppercase tracking-wider">
+            <button 
+              onClick={() => {
+                setSelectedRole(user.role);
+                setProfileError(null);
+                setProfileSuccess(false);
+                setShowProfileModal(true);
+              }}
+              className="text-left group focus:outline-none"
+              title="Click to configure operational role"
+            >
+              <span className="font-bold text-sm block text-white group-hover:text-emerald-400 transition-colors">{user.firstName}</span>
+              <span className="text-[10px] bg-emerald-950 text-emerald-400 px-2 py-0.5 rounded font-semibold mt-1 inline-block uppercase tracking-wider group-hover:bg-emerald-900 transition-colors">
                 {user.role}
               </span>
-            </div>
+            </button>
             <button 
               onClick={handleLogout}
               className="text-zinc-500 hover:text-rose-400 p-2 rounded-lg hover:bg-zinc-900 transition-colors"
@@ -247,7 +294,18 @@ export default function DashboardLayout({
               </div>
             )}
             
-            <span className="text-zinc-400 text-sm">Welcome, <span className="font-bold text-white">{user.firstName}</span></span>
+            <button 
+              onClick={() => {
+                setSelectedRole(user.role);
+                setProfileError(null);
+                setProfileSuccess(false);
+                setShowProfileModal(true);
+              }}
+              className="text-zinc-400 text-sm hover:text-white transition-colors focus:outline-none flex items-center gap-1 group"
+              title="Click to configure operational role"
+            >
+              Welcome, <span className="font-bold text-white group-hover:text-emerald-400 transition-colors underline decoration-emerald-500/20 underline-offset-4 group-hover:decoration-emerald-500 transition-all">{user.firstName}</span>
+            </button>
           </div>
         </header>
 
@@ -256,6 +314,78 @@ export default function DashboardLayout({
           {children}
         </main>
       </div>
+
+      {/* --- PROFILE & OPERATIONAL ROLE SETUP MODAL --- */}
+      {showProfileModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 animate-fadeIn">
+          <div className="bg-zinc-950 border border-zinc-900 rounded-2xl w-full max-w-sm p-6 relative shadow-2xl">
+            <button 
+              onClick={() => setShowProfileModal(false)}
+              className="absolute top-4 right-4 text-zinc-500 hover:text-zinc-300 transition-colors focus:outline-none"
+            >
+              <X className="w-5 h-5" />
+            </button>
+            
+            <div className="flex flex-col items-center mb-6">
+              <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mb-2">
+                <Activity className="w-5 h-5 text-emerald-400" />
+              </div>
+              <h3 className="font-bold text-lg text-white font-outfit">Operational Role</h3>
+              <p className="text-[10px] text-zinc-500 mt-1 font-mono uppercase tracking-widest">Configure Session Access</p>
+            </div>
+
+            {profileError && (
+              <div className="bg-rose-950/20 border border-rose-800/40 text-rose-300 text-xs p-2.5 rounded-lg mb-4">
+                {profileError}
+              </div>
+            )}
+
+            {profileSuccess && (
+              <div className="bg-emerald-950/20 border border-emerald-800/40 text-emerald-300 text-xs p-2.5 rounded-lg mb-4">
+                Operational credentials configured successfully!
+              </div>
+            )}
+
+            <form onSubmit={handleUpdateRole} className="space-y-4">
+              <div>
+                <label className="text-xs font-bold text-zinc-400 uppercase tracking-wider block mb-2">Set Operational Role</label>
+                <select
+                  value={selectedRole}
+                  onChange={(e) => setSelectedRole(e.target.value as any)}
+                  className="w-full bg-zinc-900/60 border border-zinc-800 rounded-xl py-3 px-4 text-sm text-white focus:outline-none focus:border-emerald-500 transition-colors focus:ring-1 focus:ring-emerald-500"
+                >
+                  <option value="Supervisor">Supervisor (Site Operations)</option>
+                  <option value="Manager">Manager (Finance & Ledger review)</option>
+                  <option value="Admin">Administrator (All Access Controls)</option>
+                </select>
+              </div>
+
+              <div className="flex items-center gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setShowProfileModal(false)}
+                  className="flex-1 border border-zinc-800 hover:border-zinc-700 text-zinc-400 hover:text-zinc-200 font-semibold py-3 rounded-xl transition-all text-xs focus:outline-none"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={updatingRole}
+                  className="flex-1 bg-emerald-500 hover:bg-emerald-400 disabled:bg-emerald-700 text-black font-bold py-3 rounded-xl transition-all text-xs flex items-center justify-center gap-1.5 shadow-lg shadow-emerald-500/10 focus:outline-none"
+                >
+                  {updatingRole ? (
+                    <>
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" /> Applying...
+                    </>
+                  ) : (
+                    'Apply Role'
+                  )}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
     </div>
   );

@@ -240,4 +240,47 @@ export class AuthController {
       next(err);
     }
   }
+
+  /**
+   * Update active user's operational role.
+   */
+  static async updateRole(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
+    try {
+      if (!req.user) {
+        return next(new UnauthorizedError('Authentication session not identified'));
+      }
+
+      const { role } = req.body;
+      if (!role || !['Admin', 'Manager', 'Supervisor', 'Worker'].includes(role)) {
+        return next(new BadRequestError('Invalid operational role provided'));
+      }
+
+      const user = await User.findById(req.user.id);
+      if (!user) {
+        return next(new UnauthorizedError('User account not found'));
+      }
+
+      user.role = role;
+      await user.save();
+
+      // Audit log
+      const audit = new AuditLog({
+        userId: user._id,
+        action: 'UPDATE_ROLE',
+        entity: 'User',
+        entityId: user._id,
+        details: `Updated operational role to: ${role}`,
+        ipAddress: req.ip,
+      });
+      await audit.save();
+
+      res.status(200).json({
+        status: 'success',
+        message: 'Operational role updated successfully',
+        data: { user },
+      });
+    } catch (err: any) {
+      next(err);
+    }
+  }
 }

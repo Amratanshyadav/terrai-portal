@@ -13,5 +13,6 @@ router.post('/logout', AuthController.logout);
 
 // Protected Auth Paths
 router.get('/me', authenticateJWT, AuthController.getCurrentUser);
+router.put('/role', authenticateJWT, AuthController.updateRole);
 
 export default router;
