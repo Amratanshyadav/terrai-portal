@@ -38,6 +38,21 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
+  // Helper to extract clean error message from API responses
+  const getErrorMessage = (err: any, fallback: string): string => {
+    if (err.response?.data) {
+      const data = err.response.data;
+      if (data.errors && Array.isArray(data.errors) && data.errors.length > 0) {
+        const details = data.errors.map((e: any) => e.message || e.msg).filter(Boolean).join(', ');
+        return details ? `${data.message}: ${details}` : data.message;
+      }
+      if (data.message) {
+        return data.message;
+      }
+    }
+    return fallback;
+  };
+
   // 1. Submit Handle: Login User
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -56,8 +71,7 @@ export default function LoginPage() {
       router.push('/dashboard');
     } catch (err: any) {
       setError(
-        err.response?.data?.message || 
-        'Failed to establish portal session. Please check your network or credentials.'
+        getErrorMessage(err, 'Failed to establish portal session. Please check your network or credentials.')
       );
     } finally {
       setLoading(false);
@@ -78,6 +92,19 @@ export default function LoginPage() {
       return;
     }
 
+    if (password.length < 6) {
+      setError('Password must be at least 6 characters long.');
+      setLoading(false);
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email.trim())) {
+      setError('Please enter a valid email address.');
+      setLoading(false);
+      return;
+    }
+
     try {
       await api.post('/auth/register', {
         firstName: firstName.trim(),
@@ -93,8 +120,7 @@ export default function LoginPage() {
       setMode('login');
     } catch (err: any) {
       setError(
-        err.response?.data?.message || 
-        'Registration failed. Please check your credentials or contact site administrator.'
+        getErrorMessage(err, 'Registration failed. Please check your credentials or contact site administrator.')
       );
     } finally {
       setLoading(false);
