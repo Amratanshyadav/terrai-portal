@@ -80,4 +80,42 @@ Access the secure portal at `http://localhost:3000/login` using your configured 
 ```
 
 ---
+
+## 🌐 Cloud Deployment (Railway)
+
+If you want the portal to run online 24/7 so that anyone can access it from their mobile phone anywhere in the world (even when your laptop is turned off), you can deploy it to **Railway.app** in 3 simple clicks:
+
+### Step 1: Link your Repository on Railway
+1. Go to [Railway.app](https://railway.app) and sign up/log in with your GitHub account.
+2. Click **New Project** > **Deploy from GitHub repository** > Select your **`terrai-portal`** repository.
+
+### Step 2: Add MongoDB Database (Inside Railway)
+1. On your Railway dashboard project canvas, click **New** > **Database** > **MongoDB**.
+2. Railway will instantly spin up a local private MongoDB cluster for you.
+3. Click on the MongoDB service on the canvas, go to the **Variables** tab, and copy the `MONGODB_URL` variable.
+
+### Step 3: Configure and Launch Services
+
+#### A. Configure Backend:
+1. Click **New** > **GitHub Repo** > Select `terrai-portal`.
+2. Under **Settings** > **General**, set **Root Directory** to `backend`.
+3. Go to the **Variables** tab, and add:
+   * `PORT` = `5000`
+   * `NODE_ENV` = `production`
+   * `MONGO_URI` = `${{MONGODB_URL}}` *(This automatically links your Railway MongoDB)*
+   * `JWT_ACCESS_SECRET` = `your_own_custom_secret_key`
+   * `JWT_REFRESH_SECRET` = `your_own_custom_refresh_key`
+4. Railway will automatically build and launch your backend using the backend Dockerfile. Copy your backend service's public URL (e.g. `https://terrai-backend.up.railway.app`).
+
+#### B. Configure Frontend:
+1. Click **New** > **GitHub Repo** > Select `terrai-portal` again.
+2. Under **Settings** > **General**, set **Root Directory** to `frontend`.
+3. Go to the **Variables** tab, and add:
+   * `NEXT_PUBLIC_API_URL` = `https://your-backend-url.up.railway.app/api/v1` *(Use the backend URL from the previous step)*
+   * `NEXT_PUBLIC_SOCKET_URL` = `https://your-backend-url.up.railway.app`
+4. Railway will automatically compile your Next.js frontend and provide a global public web URL (e.g. `https://terrai-frontend.up.railway.app`).
+
+**🎉 You are all set! Share the frontend link with your supervisors and staff to access the Terrai portal from any device, anywhere in the world!**
+
+---
 *Developed with premium aesthetics and extreme simplicity for **Terrai** operations.*
