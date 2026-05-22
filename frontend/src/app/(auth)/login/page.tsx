@@ -300,7 +300,7 @@ export default function LoginPage() {
                 </>
               ) : (
                 <>
-                  <UserPlus className="w-4 h-4" /> Create Supervisor Account
+                  <UserPlus className="w-4 h-4" /> Create Account
                 </>
               )}
             </button>
