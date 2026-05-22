@@ -6,6 +6,10 @@ const getApiUrl = () => {
     return process.env.NEXT_PUBLIC_API_URL;
   }
   if (typeof window !== 'undefined') {
+    // In production on Vercel, use relative path to talk to the same domain automatically
+    if (window.location.hostname !== 'localhost') {
+      return '/api/v1';
+    }
     return `http://${window.location.hostname}:5000/api/v1`;
   }
   return 'http://localhost:5000/api/v1';

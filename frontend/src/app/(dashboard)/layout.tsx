@@ -97,6 +97,12 @@ export default function DashboardLayout({
 
   // 2. Real-time web sockets integration
   useEffect(() => {
+    // In serverless production, Socket.io is not active, so skip connection to prevent console errors
+    const isProductionVercel = typeof window !== 'undefined' && window.location.hostname !== 'localhost' && !process.env.NEXT_PUBLIC_SOCKET_URL;
+    if (isProductionVercel) {
+      return;
+    }
+
     const socket = io(SOCKET_URL);
 
     // Join room for real-time safety alerts
