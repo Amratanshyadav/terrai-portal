@@ -1,0 +1,84 @@
+# 🌲 Terrai — Operational Control Center & Digital Ledger
+
+Welcome to **Terrai**, a sleek, high-performance, and distraction-free operational digital ledger. Restructured and rebranded from the legacy Shri Krishna Construction Portal, **Terrai** is optimized for raw speed, utility, and visual excellence on mining site locations.
+
+All complex telemetry, AI-chats, and warehouse stocks have been pruned, leaving three high-impact, mobile-friendly modules for on-site managers and security supervisors.
+
+---
+
+## ⚡ Key Modules
+
+1. **👥 Employees & Payments Directory**
+   * **Employees Roster**: Single-name workforce directory tracking phone numbers, job roles/posts, and monthly base salaries.
+   * **Payments Ledger**: Accurate historical cash advances and salary payments ledger recorded in native Indian Rupees (`₹`).
+
+2. **🚛 Vehicle Movement Logs**
+   * **Real-time Tracker**: Active on-site tracking of vehicles with automated driver loggers.
+   * **One-Click Check-Out**: Quick dispatch logging with duration calculations and historical logs.
+
+3. **⛽ Diesel Fuel Logs**
+   * **Fuel Ledger**: Detailed dispatch tracking including liters, cost in `₹`, dispatcher name, and timestamps.
+   * **Quick Metrics**: Instant aggregate stats showing total liters issued and cumulative expenditures.
+
+---
+
+## 🛠️ Technology Stack
+
+* **Frontend**: Next.js (TypeScript, modern dark-zinc UI, HSL theme colors, Lucide icons, responsive navigation).
+* **Backend**: Node.js & Express (TypeScript, REST API Architecture).
+* **Database**: MongoDB (Mongoose schemas, optimized first-name-only indexes).
+
+---
+
+## 🚀 Quick Launch Guide
+
+Follow these steps to run the application locally on your Windows environment:
+
+### Step 1: Initialize the Database (Seeding)
+Reset your database and seed it with clean, simplified operational datasets:
+```powershell
+cd backend
+npm run seed
+```
+
+### Step 2: Launch the Servers
+We have included a customized batch file in the root of the project to run both servers simultaneously. 
+
+Simply **double-click** on:
+👉 `Launch_Portal.bat`
+
+*Alternatively, you can start them manually in separate terminal windows:*
+* **Backend API Gateway (`http://localhost:5000`)**:
+  ```powershell
+  cd backend
+  npm run dev
+  ```
+* **Next.js Frontend Client (`http://localhost:3000`)**:
+  ```powershell
+  cd frontend
+  npm run dev
+  ```
+
+---
+
+## 🔐 Secure Gateway Login
+
+Access the secure portal at `http://localhost:3000/login` with your manager credentials:
+
+* **Email:** `admin@shrikrishna.com`
+* **Password:** `Admin123!`
+
+---
+
+## 📁 Repository Structure
+
+```
+├── frontend/               # Next.js client-side application
+├── backend/                # Express rest API gateway
+├── Launch_Portal.bat       # Windows automation batch launcher
+├── .gitignore              # Ignored files (node_modules, next, .env)
+└── README.md               # You are here!
+```
+
+---
+*Developed with premium aesthetics and extreme simplicity for **Terrai** operations.*
