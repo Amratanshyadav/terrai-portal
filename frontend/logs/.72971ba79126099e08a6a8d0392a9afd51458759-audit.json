@@ -1,0 +1,15 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 14
+    },
+    "auditLog": "C:\\Users\\amrat\\OneDrive\\Desktop\\MINES MANAGEMENT PROJECT\\frontend\\logs\\.72971ba79126099e08a6a8d0392a9afd51458759-audit.json",
+    "files": [
+        {
+            "date": 1779512877676,
+            "name": "C:\\Users\\amrat\\OneDrive\\Desktop\\MINES MANAGEMENT PROJECT\\frontend\\logs\\combined-2026-05-23.log",
+            "hash": "071fd2fd8b95f38a2c5785bbf240c4b8c751c0d138bb492f2e2fd100b81aadc8"
+        }
+    ],
+    "hashType": "sha256"
+}

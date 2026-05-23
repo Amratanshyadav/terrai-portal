@@ -2,15 +2,14 @@ import axios from 'axios';
 import { useAuthStore } from '../store/useAuthStore';
 
 const getApiUrl = () => {
-  if (process.env.NEXT_PUBLIC_API_URL) {
-    return process.env.NEXT_PUBLIC_API_URL;
-  }
   if (typeof window !== 'undefined') {
     // In production on Vercel, use relative path to talk to the same domain automatically
     if (window.location.hostname !== 'localhost') {
       return '/api/v1';
     }
-    return `http://${window.location.hostname}:5000/api/v1`;
+  }
+  if (process.env.NEXT_PUBLIC_API_URL) {
+    return process.env.NEXT_PUBLIC_API_URL;
   }
   return 'http://localhost:5000/api/v1';
 };
